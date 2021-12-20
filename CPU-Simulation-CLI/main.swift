@@ -35,5 +35,21 @@ func main() throws {
         return
     }
     
-    print(try String(contentsOf: URL(fileURLWithPath: fileName)))
+    let assembler = try String(contentsOf: URL(fileURLWithPath: fileName))
+    
+    let mem = Memory()
+    
+    _ = parseAssembler(input: assembler, mem: mem)
+    
+    let cpu = CPU(memory: mem)
+    
+    let success = cpu.run()
+    
+    if success {
+        print("Code executed successfull.")
+    } else {
+        print("Code executed unsuccessfull!")
+    }
+    
+    print("\n" + String(describing: mem))
 }
