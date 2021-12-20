@@ -28,7 +28,7 @@ func main() throws {
     var fileName = args[1]
     
     if fileName.first != "/" {
-        fileName = fm.currentDirectoryPath + fileName
+        fileName = fm.currentDirectoryPath + "/" + fileName
     }
     
     if !fm.isReadableFile(atPath: fileName) {
