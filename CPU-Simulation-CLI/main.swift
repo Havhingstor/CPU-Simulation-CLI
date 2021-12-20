@@ -6,6 +6,34 @@
 //
 
 import Foundation
+import CPU_Simulation_Lib
 
-print("Hello, World!")
+try main()
 
+func main() throws {
+    let args = CommandLine.arguments
+    
+    if args.count < 2 {
+        print("No file is specified!")
+        return
+    }
+    
+    let fm = FileManager.default
+    
+    if args[1] == "-h" {
+        print("Specify the location of a assembler-file!")
+        return
+    }
+    
+    var fileName = args[1]
+    
+    if fileName.first != "/" {
+        fileName = fm.currentDirectoryPath + fileName
+    }
+    
+    if !fm.isReadableFile(atPath: fileName) {
+        return
+    }
+    
+    print(try String(contentsOf: URL(fileURLWithPath: fileName)))
+}
