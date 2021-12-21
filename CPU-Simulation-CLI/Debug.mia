@@ -1,3 +1,6 @@
+    LOAD $loc
+    STORE val
+    STORE startval
 start:
     LOAD tmp
     ADD $10
@@ -6,10 +9,15 @@ start:
     LOAD val
     ADD $1
     STORE val
+    SUB startval
     CMP $200
-    JLE start
+    JLT start
     HOLD
 tmp:
     WORD 0
 val:
-    WORD 0x30
+    WORD 0
+startval:
+    WORD 0
+loc:
+    WORD 0
