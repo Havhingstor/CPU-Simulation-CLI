@@ -32,6 +32,7 @@ func main() throws {
     }
     
     if !fm.isReadableFile(atPath: fileName) {
+        print("File is not readable or doesn't exist!")
         return
     }
     
