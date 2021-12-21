@@ -1,0 +1,15 @@
+start:
+    LOAD tmp
+    ADD $10
+    STORE (val)
+    STORE tmp
+    LOAD val
+    ADD $1
+    STORE val
+    CMP $200
+    JLE start
+    HOLD
+tmp:
+    WORD 0
+val:
+    WORD 0x30
