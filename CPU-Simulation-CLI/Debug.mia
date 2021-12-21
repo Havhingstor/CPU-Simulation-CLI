@@ -13,6 +13,8 @@ start:
     CMP $200
     JLT start
     HOLD
+    LOAD val
+    STORE (val)
 tmp:
     WORD 0
 val:
