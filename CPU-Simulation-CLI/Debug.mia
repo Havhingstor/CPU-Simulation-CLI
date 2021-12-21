@@ -15,6 +15,7 @@ start:
     HOLD
     LOAD val
     STORE (val)
+    HOLD
 tmp:
     WORD 0
 val:

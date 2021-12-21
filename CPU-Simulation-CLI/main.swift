@@ -44,12 +44,12 @@ func main() throws {
     
     let cpu = CPU(memory: mem)
     
-    var conitinueRunning = true
+    var continueRunning = true
     
-    while conitinueRunning {
-        conitinueRunning = cpu.run()
+    while continueRunning {
+        continueRunning = cpu.run()
         
-        if conitinueRunning {
+        if continueRunning {
             print("Code executed successfull.")
         } else {
             print("Code executed unsuccessfull!")
@@ -57,11 +57,13 @@ func main() throws {
         
         print("\n" + String(describing: mem))
         
-        print("Should the CPU continue running?\n'C' to continue, else the execution will be exited.")
-        let answer = readLine()
-        
-        if answer != "C" {
-            conitinueRunning = false
+        if continueRunning {
+            print("Should the CPU continue running?\n'C' to continue, else the execution will be exited.")
+            let answer = readLine()
+            
+            if answer != "C" {
+                continueRunning = false
+            }
         }
     }
 }
