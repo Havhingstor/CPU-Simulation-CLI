@@ -40,7 +40,7 @@ func main() throws {
     
     let mem = Memory()
     
-    _ = parseAssembler(input: assembler, mem: mem)
+    let parseResults = parseAssembler(input: assembler, mem: mem)
     
     let cpu = CPU(memory: mem)
     
@@ -55,15 +55,26 @@ func main() throws {
             print("Code executed unsuccessfull!")
         }
         
-        print("\n" + String(describing: mem))
+        print("\n" + getMemoryRepresentation(mem: mem, results: parseResults))
         
-        if continueRunning {
-            print("Should the CPU continue running?\n'C' to continue, else the execution will be exited.")
+        while true {
+            print("What should be done next?\n'P' to print the memory without transformation or additional information.")
+            
+            if continueRunning {
+                print("'C' to continue running the CPU after the HOLD-instruction")
+            }
+            print("Everything else will end the program.")
+            
             let answer = readLine()
             
-            if answer != "C" {
+            if answer == "P" {
+                print("\n\(mem)")
+            } else if answer != "C" {
                 continueRunning = false
+                break
+            } else {
+                break
             }
-        }
+        }        
     }
 }
