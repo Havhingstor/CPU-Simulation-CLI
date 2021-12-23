@@ -55,7 +55,7 @@ func main() throws {
             print("Code executed unsuccessfull!")
         }
         
-        print("\n" + getMemoryRepresentation(mem: mem, results: parseResults))
+        print("\n\(getCPUString(cpu: cpu))\n\(getVars(parseResult: parseResults, mem: mem))\n\(getMemoryRepresentation(mem: mem, results: parseResults))")
         
         while true {
             print("What should be done next?\n'P' to print the memory without transformation or additional information.")
@@ -75,6 +75,41 @@ func main() throws {
             } else {
                 break
             }
-        }        
+        }
     }
+}
+
+func getCPUString(cpu: CPU) -> String {
+    return "CPU:\nprogram counter: 0x\(hex(cpu.programCounterExternal))\t\tstack-pointer: 0x\(hex(cpu.stackpointerExternal))\naccumulator: \(cpu.accumulatorExternal)\t\t\texecution cycles: \(cpu.cycleCountExternal)\n"
+}
+
+func getVars(parseResult: ParseResults, mem: Memory) -> String {
+    var result = "Variables:\n"
+    let vars = parseResult.vars
+    
+    for variable in vars {
+        if parseResult.operators[variable.value] != nil {
+            continue
+        }
+        result += "\"\(variable.key)\" at 0x\(hex(variable.value)): "
+        if parseResult.addresses.contains(variable.value) {
+            result += "0x" + hex(mem.read(address: variable.value))
+        } else {
+            result += String(mem.read(address: variable.value))
+        }
+        result += "\n"
+    }
+    
+    result += "\nJump-Markers:\n"
+    
+    for variable in vars {
+        if parseResult.operators[variable.value] == nil {
+            continue
+        }
+        result += "\"\(variable.key)\" at 0x\(hex(variable.value)): "
+        result += "\(parseResult.operators[variable.value]!.string) (0x\(hex(mem.read(address: variable.value))))"
+        result += "\n"
+    }
+    
+    return result
 }

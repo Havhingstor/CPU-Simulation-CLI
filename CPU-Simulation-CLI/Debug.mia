@@ -1,26 +1,26 @@
-    LOAD $loc
-    STORE val
-    STORE startval
-start:
-    LOAD tmp
-    ADD $10
-    STORE (val)
-    STORE tmp
-    LOAD val
-    ADD $1
-    STORE val
-    SUB startval
-    CMP $200
-    JLT start
-    HOLD
-    LOAD val
-    STORE (val)
-    HOLD
-tmp:
-    WORD 0
-val:
-    WORD 0
-startval:
-    WORD 0
-loc:
-    WORD 0
+		JMP	Start
+Var1:	WORD	30
+Var2:	WORD	75
+Tmp:	WORD	0
+Result:	WORD	0
+Start:
+		LOAD	Var2
+		STORE	Tmp
+MemL:	LOAD	Tmp
+		JMPZ	End
+		JMPN	MemN
+MemP:	LOAD	Result
+		ADD	Var1
+		STORE	Result
+		LOAD	Tmp
+		SUBI	1
+		STORE	Tmp
+		JMP	MemL
+MemN:	LOAD	Result
+		SUB	Var1
+		STORE	Result
+		LOAD	Tmp
+		ADDI	1
+		STORE	Tmp
+		JMP	MemL
+End:	HOLD
