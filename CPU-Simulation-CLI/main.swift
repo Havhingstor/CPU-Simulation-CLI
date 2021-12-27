@@ -120,6 +120,9 @@ func getVars(parseResult: ParseResults, mem: Memory) -> String {
 }
 
 func printAll(cpu: CPU, mem: Memory, parseResults: ParseResults, continueRunningAllowed: Bool) -> Bool {
+    if continueRunningAllowed {
+        print("Execution successfull.")
+    }
     print("\n\(getCPUString(cpu: cpu))\n\(getVars(parseResult: parseResults, mem: mem))\n\(getMemoryRepresentation(mem: mem, results: parseResults))")
     
     while true {
