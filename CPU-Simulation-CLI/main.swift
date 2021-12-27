@@ -40,60 +40,45 @@ func main() throws {
     
     let mem = Memory()
     
+    let cpu = CPU(memory: mem)
+    
+    var parseResults: ParseResults? = nil
     do {
-        let parseResults = try parseAssembler(input: assembler, mem: mem)
+        parseResults = try parseAssembler(input: assembler, mem: mem)
         
-        let cpu = CPU(memory: mem)
         
         var continueRunning = true
         
         while continueRunning {
-            continueRunning = cpu.run()
+            try cpu.run()
             
-            if continueRunning {
-                print("Code executed successfull.")
-            } else {
-                print("Code executed unsuccessfull!")
-            }
-            
-            print("\n\(getCPUString(cpu: cpu))\n\(getVars(parseResult: parseResults, mem: mem))\n\(getMemoryRepresentation(mem: mem, results: parseResults))")
-            
-            while true {
-                print("What should be done next?\n'P' to print the memory without transformation or additional information.")
-                
-                if continueRunning {
-                    print("'C' to continue running the CPU after the HOLD-instruction")
-                }
-                print("Everything else will end the program.")
-                
-                let answer = readLine()
-                
-                if answer == "P" {
-                    print("\n\(mem)")
-                } else if answer != "C" {
-                    continueRunning = false
-                    break
-                } else {
-                    break
-                }
-            }
+            continueRunning = printAll(cpu: cpu, mem: mem, parseResults: parseResults!, continueRunningAllowed: true)
         }
-    } catch ParsingErrors.operatorStringDoesNotExist(let input, let lineNr) {
+    } catch ParsingError.operatorStringDoesNotExist(let input, let lineNr) {
         print("The operator \"\(input)\" in line \(lineNr) couldn't be parsed!")
-    } catch ParsingErrors.literalIsNotAllowed(let input, let lineNr) {
+    } catch ParsingError.literalIsNotAllowed(let input, let lineNr) {
         print("The operator \"\(input)\" in line \(lineNr) couldn't be parsed, because it's not allowed to receive a literal!")
-    } catch ParsingErrors.doubleLiteral(let input, let lineNr) {
+    } catch ParsingError.doubleLiteral(let input, let lineNr) {
         print("The operator \"\(input)\" in line \(lineNr) tries to declare a literal twice, which isn't allowed!")
-    } catch ParsingErrors.hasToBeLiteral(let input, let lineNr) {
+    } catch ParsingError.hasToBeLiteral(let input, let lineNr) {
         print("The operator \"\(input)\" in line \(lineNr) has to receive an simple literal, everything else, even literals in relation of the stackpointer aren't allowed.")
-    } catch ParsingErrors.wrongNumberOfArguments(let input, let mode, let lineNr) {
+    } catch ParsingError.wrongNumberOfArguments(let input, let mode, let lineNr) {
         if mode {
             print("The operator \"\(input)\" in line \(lineNr) has to receive a operator, but does not!")
         } else {
             print("The operator \"\(input)\" in line \(lineNr) is not allowed to receive a operator, but does so!")
         }
-    } catch ParsingErrors.unreadableAddressInput(let input, let lineNr) {
+    } catch ParsingError.unreadableAddressInput(let input, let lineNr) {
         print("The address or literal \"\(input)\" in line \(lineNr) couldn't be parsed!")
+    } catch ExecutionError.decodingError(let opcode, let address) {
+        print("Error: the opcode \(hex(opcode)) (\(opcode)) at address 0x\(hex(address)) cannot be decoded.")
+        _ = printAll(cpu: cpu, mem: mem, parseResults: parseResults!, continueRunningAllowed: false)
+    } catch ExecutionError.cannotReceiveLiteral(let opcode, let operatorString, let address) {
+        print("Error: the operator \"\(operatorString)\" with the opcode \(hex(opcode)) (\(opcode)) at address 0x\(hex(address)) cannot receive a literal, but does so.")
+        _ = printAll(cpu: cpu, mem: mem, parseResults: parseResults!, continueRunningAllowed: false)
+    } catch ExecutionError.mustReceiveLiteral(let opcode, let operatorString, let address) {
+        print("Error: the operator \"\(operatorString)\" with the opcode \(hex(opcode)) (\(opcode)) at address 0x\(hex(address)) has to receive a literal, but doesn't.")
+        _ = printAll(cpu: cpu, mem: mem, parseResults: parseResults!, continueRunningAllowed: false)
     } catch {
         print("Error: \(error)")
     }
@@ -132,4 +117,27 @@ func getVars(parseResult: ParseResults, mem: Memory) -> String {
     }
     
     return result
+}
+
+func printAll(cpu: CPU, mem: Memory, parseResults: ParseResults, continueRunningAllowed: Bool) -> Bool {
+    print("\n\(getCPUString(cpu: cpu))\n\(getVars(parseResult: parseResults, mem: mem))\n\(getMemoryRepresentation(mem: mem, results: parseResults))")
+    
+    while true {
+        print("What should be done next?\n'P' to print the memory without transformation or additional information.")
+        
+        if continueRunningAllowed {
+            print("'C' to continue running the CPU after the HOLD-instruction")
+        }
+        print("Everything else will end the program.")
+        
+        let answer = readLine()
+        
+        if answer == "P" {
+            print("\n\(mem)")
+        } else if answer == "C" && continueRunningAllowed {
+            return true
+        } else {
+            return false
+        }
+    }
 }
