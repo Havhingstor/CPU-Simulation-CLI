@@ -11,7 +11,9 @@ import CPU_Simulation_Lib
 try main()
 
 func main() throws {
-    let args = CommandLine.arguments
+    var args = CommandLine.arguments
+    
+    let s = parseCLIArgs(args: &args)
     
     if args.count < 2 {
         print("No file is specified!")
@@ -40,7 +42,7 @@ func main() throws {
     
     let mem = Memory()
     
-    let cpu = CPU(memory: mem)
+    let cpu = CPU(programStart: s,memory: mem)
     
     var parseResults: ParseResults? = nil
     do {
@@ -143,4 +145,34 @@ func printAll(cpu: CPU, mem: Memory, parseResults: ParseResults, continueRunning
             return false
         }
     }
+}
+
+func parseCLIArgs(args: inout [String]) -> UInt16 {
+    for i in 0 ... args.count {
+        let val = args[i]
+        if i == args.count - 1 {
+            return 0
+        }
+        if val.lowercased() == "-s" {
+            if args[i+1].isNumberWithoutNegative {
+                let nrI = Int(args[i+1])!
+                if nrI > "FFFF".uHex {
+                    continue
+                }
+                let nr = UInt16(nrI)
+                args.remove(at: i)
+                args.remove(at: i)
+                return nr
+            } else if args[i+1].isHexadecimalWithoutNegative {
+                if args[i+1].count > 6 {
+                    continue
+                }
+                let nr = args[i+1].uHex
+                args.remove(at: i)
+                args.remove(at: i)
+                return nr
+            }
+        }
+    }
+    return 0
 }
