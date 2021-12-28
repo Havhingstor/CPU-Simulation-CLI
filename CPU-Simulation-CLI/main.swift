@@ -24,6 +24,11 @@ func main() throws {
     
     if args[1] == "-h" {
         print("Specify the location of a assembler-file!")
+        print("You can also specify the starting point in memory with the '-s'-flag and a decimal\nor hexadecimal number, which is positive and smaller than 65536 or 0x10000.")
+        return
+    } else if args[1] == "-v" {
+        let version = "1.0"
+        print("CPU-Simulation-CLI, Paul Schütz/Paul Schuetz\nVersion \(version)")
         return
     }
     
