@@ -97,17 +97,17 @@ func getCPUString(cpu: CPU) -> String {
 
 func getVars(parseResult: ParseResults, mem: Memory) -> String {
     var result = "Variables:\n"
-    let vars = parseResult.vars
+    let vars = parseResult.varList
     
     for variable in vars {
-        if parseResult.operators[variable.value] != nil {
+        if parseResult.operators[variable.1] != nil {
             continue
         }
-        result += "\"\(variable.key)\" at 0x\(hex(variable.value)): "
-        if parseResult.addresses.contains(variable.value) {
-            result += "0x" + hex(mem.read(address: variable.value))
+        result += "\"\(variable.0)\" at 0x\(hex(variable.1)): "
+        if parseResult.addresses.contains(variable.1) {
+            result += "0x" + hex(mem.read(address: variable.1))
         } else {
-            result += String(mem.read(address: variable.value))
+            result += String(mem.read(address: variable.1))
         }
         result += "\n"
     }
@@ -115,11 +115,11 @@ func getVars(parseResult: ParseResults, mem: Memory) -> String {
     result += "\nJump-Markers:\n"
     
     for variable in vars {
-        if parseResult.operators[variable.value] == nil {
+        if parseResult.operators[variable.1] == nil {
             continue
         }
-        result += "\"\(variable.key)\" at 0x\(hex(variable.value)): "
-        result += "\(parseResult.operators[variable.value]!.string) (0x\(hex(mem.read(address: variable.value))))"
+        result += "\"\(variable.0)\" at 0x\(hex(variable.1)): "
+        result += "\(parseResult.operators[variable.1]!.string) (0x\(hex(mem.read(address: variable.1))))"
         result += "\n"
     }
     
