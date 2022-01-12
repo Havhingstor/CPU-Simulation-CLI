@@ -17,6 +17,8 @@ func main() throws {
     
     if args.count < 2 {
         print("No file is specified!")
+        print("Specify the location of a assembler-file!")
+        print("You can also specify the starting point in memory with the '-s'-flag and a decimal\nor hexadecimal number, which is positive and smaller than 65536 or 0x10000.")
         return
     }
     
@@ -27,8 +29,9 @@ func main() throws {
         print("You can also specify the starting point in memory with the '-s'-flag and a decimal\nor hexadecimal number, which is positive and smaller than 65536 or 0x10000.")
         return
     } else if args[1] == "-v" {
-        let version = "1.0"
-        print("CPU-Simulation-CLI, Paul Schütz/Paul Schuetz\nVersion \(version)")
+        let version = "1.0.1"
+        let date = "12.1.2022"
+        print("CPU-Simulation-CLI, Paul Schütz/Paul Schuetz\nVersion \(version)\n\(date)")
         return
     }
     
