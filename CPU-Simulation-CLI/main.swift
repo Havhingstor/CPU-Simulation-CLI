@@ -43,7 +43,14 @@ func main() throws {
         return
     }
     
-    var fileName = args[1]
+	let fileIndex = parsedArgs.firstNonOption
+	
+	if fileIndex < 0 {
+		print("No file is specified!")
+		return
+	}
+	
+    var fileName = args[fileIndex]
     
     if fileName.first != "/" {
         fileName = fm.currentDirectoryPath + "/" + fileName
@@ -145,9 +152,9 @@ enum OperationMode {
 }
 
 func getCPUString(cpu: CPU, assemblingResults: AssemblingResults) -> String {
-    let literalValueType = AssemblingResults.LiteralAddressValue()
+	let literalValueType = AssemblingResults.LiteralAddressValue(value: cpu.accumulator)
     
-    let accuString = literalValueType.transform(value: cpu.accumulator)
+    let accuString = literalValueType.transform()
     
     var result = "CPU:\n"
     result += "State: \(cpu.state)\n\n"
@@ -180,9 +187,9 @@ func getOperatorString(cpu: CPU) -> String {
 func getOperandString(cpu: CPU, assemblingResult result: AssemblingResults) -> String {
     let operandAddress = cpu.operatorProgramCounter &+ 1
     
-    let valueType = result.memoryValues[operandAddress] ?? AssemblingResults.AddressAddressValue()
+	let valueType = result.memoryValues[operandAddress] ?? AssemblingResults.AddressAddressValue(value: cpu.operand)
     
-    return valueType.transform(value: cpu.operand)
+    return valueType.transform()
 }
 
 func getMarkerOfAType(assemblingResults results: AssemblingResults, mem: Memory, markerType: AssemblingResults.Marker.`Type`, title: String) -> String {
@@ -199,10 +206,10 @@ func getMarkerOfAType(assemblingResults results: AssemblingResults, mem: Memory,
         
         result += "\"\(marker.name)\" at 0x\(toHexString(marker.address)): "
         
-        let valueType = results.memoryValues[marker.address] ?? AssemblingResults.AddressAddressValue()
+		let valueType = results.memoryValues[marker.address] ?? AssemblingResults.AddressAddressValue(value: mem.read(address: marker.address))
         
-        let representation = valueType.transform(value: mem.read(address: marker.address))
-        let numericRespresentation = valueType.transformOnlyNumber(value: mem.read(address: marker.address))
+        let representation = valueType.transform()
+        let numericRespresentation = valueType.transformOnlyNumber()
         
         result += representation
         
@@ -281,7 +288,7 @@ func printAll(cpu: CPU, mem: Memory, assemblingResults: AssemblingResults) {
 func parseCLIArgs(args: inout [String]) -> ArgsResults {
     var result = ArgsResults()
     
-    var i = 0
+    var i = 1
     
     while i < args.count {
         let val = args[i]
@@ -332,7 +339,9 @@ func parseCLIArgs(args: inout [String]) -> ArgsResults {
             }
         } else if val.lowercased() == "-r" {
             result.instantRun = true
-        }
+		} else if result.firstNonOption == -1 {
+			result.firstNonOption = i
+		}
         
         i += 1
     }
@@ -342,4 +351,5 @@ func parseCLIArgs(args: inout [String]) -> ArgsResults {
 struct ArgsResults {
     var startingPoint: UInt16?
     var instantRun = false
+	var firstNonOption: Int = -1
 }

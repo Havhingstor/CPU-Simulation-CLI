@@ -16,9 +16,9 @@ func getBusses(cpu: CPU, assemblingResults: AssemblingResults) -> String {
     if let addressBus = cpu.addressBus, let dataBus = cpu.dataBus {
         addressString = toLongHexString(addressBus)
         
-        let valueType = assemblingResults.memoryValues[addressBus] ?? AssemblingResults.AddressAddressValue()
+		let valueType = assemblingResults.memoryValues[addressBus] ?? AssemblingResults.AddressAddressValue(value: dataBus)
         
-        dataString = valueType.transformOnlyNumber(value: dataBus)
+        dataString = valueType.transformOnlyNumber()
     }
     
     var result =    "Address-Bus:\t\(addressString)\n"
@@ -85,9 +85,9 @@ private func getStringOfAddress(memory: Memory, lineNr: UInt16, address: UInt16,
     let realAddress = calculateAddressFromLineAndNr(lineNr: lineNr, address: address)
     let value = memory.read(address: realAddress)
     
-    let valueType = assemblingResults.memoryValues[realAddress] ?? AssemblingResults.AddressAddressValue()
+	let valueType = assemblingResults.memoryValues[realAddress] ?? AssemblingResults.AddressAddressValue(value: value)
     
-    return valueType.transform(value: value)
+    return valueType.transform()
 }
 fileprivate func addAddressToLine(line: inout [String], lineNr: UInt16, address: UInt16, assemblingResults: AssemblingResults, memory: Memory) {
     line.append(getStringOfAddress(memory: memory, lineNr: lineNr, address: address, assemblingResults: assemblingResults))
