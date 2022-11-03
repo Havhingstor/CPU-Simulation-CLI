@@ -168,7 +168,7 @@ func getCPUString(cpu: CPU, assemblingResults: AssemblingResults) -> String {
     result += "z" + (cpu.zFlag ? "*" : " ") + "    "
     result += "v" + (cpu.vFlag ? "*" : " ") + "\n\n"
     
-    result += "Operator\t\(getOperatorString(cpu: cpu))\n"
+    result += "Operator\t\(getOperatorString(cpu: cpu, assemblingResult: assemblingResults))\n"
     result += "Operand \t\(getOperandString(cpu: cpu, assemblingResult: assemblingResults))"
     
     result += "\n"
@@ -176,12 +176,19 @@ func getCPUString(cpu: CPU, assemblingResults: AssemblingResults) -> String {
     return result
 }
 
-func getOperatorString(cpu: CPU) -> String {
-    if cpu.operator != nil && cpu.operandType != nil {
-        return cpu.operatorString + cpu.operandType!.representationAddition
-    }
-    
-    return toLongHexString(cpu.opcode)
+func getOperatorString(cpu: CPU, assemblingResult result: AssemblingResults) -> String {
+	let operatorAddress = cpu.operatorProgramCounter
+	
+	let valueType = result.memoryValues[operatorAddress]
+	
+	if valueType == nil {
+		if cpu.operator != nil && cpu.operandType != nil {
+			return cpu.operatorString + cpu.operandType!.representationAddition
+		}
+		return toLongHexString(cpu.opcode)
+	}
+		
+	return valueType!.transform()
 }
 
 func getOperandString(cpu: CPU, assemblingResult result: AssemblingResults) -> String {
